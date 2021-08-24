@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Puzzle</title>
+    </head>
+    <body>
+        <div id="game"></div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script>
+            $(() => {
+                const game = $("#game");
+                let winWidth = $(window).width(); 
+                $("body").css("margin", "0");
+                game.css({
+                    position: "relative",
+                    width: "800px",
+                    height: "600px",
+                    'box-sizing': "border-box",
+                    border: "1px solid #666"
+                })
+                for(let i = 0; i < 6; i++){
+                    for(let j = 0; j < 8; j++){
+                        game.append('<div id="d' + i + j + '"></div>');
+                    }  
+                }
+
+                //
+                    $( "body" ).append('<img src="puzzle.jpg" width="500" height="400"/>')
+                //
+
+                for(let i = 0; i < 6; i++){
+                    for(let j = 0; j < 8; j++){
+                        let id = "#d" + i + j;
+                        $(id).css({
+                            width: "100px",
+                            height: "100px",
+                            position: "absolute",
+                            'box-sizing': "border-box",
+                            border: "1px solid #eee",
+                            top: rand(20, 500) + "px",
+                            left: rand(820, winWidth - 150) + "px",
+                            "background-image": "url('puzzle.jpg')",
+                            "background-position": (-100 * j) + "px " + (-100 * i) + "px",
+                            "box-shadow": "0 0 5px #333",
+                            transform: "rotate(" + rand(-10, 10) + "deg)"
+                        }) 
+                    }  
+                }
+                    
+                function ended() {
+                    for(let i = 0; i < 6; i++){
+                        for(let j = 0; j < 8; j++){
+                            let id = $("#d" + i + j) ;
+                            if (id.position().left != 100*j && id.position().top != 100*i )  return false;
+                        }
+                    }
+                    return true
+                }
+
+                $("#game>div").draggable({
+                    snap: true,
+                    start: function( event, ui ) {
+                        $(this).css({
+                            "z-index": 99,
+                            transform: "rotate(0deg)"
+                        })
+                    },
+                    stop: function( event, ui ) {
+                        $(this).css({
+                            top: 100 * Math.round($(this).position().top / 100) + "px",
+                            left: 100 * Math.round($(this).position().left / 100) + "px"
+                        })
+                         ended() ? alert('you won') : ""; //homework
+                    }
+                });
+               
+                function rand(min, max) {
+                    return Math.floor(Math.random() * (max - min + 1) ) + min;
+                }
+            })
+        </script>
+    </body>
+</html>

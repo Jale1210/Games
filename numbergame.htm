@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        table {border-collapse: collapse; margin: 50px auto; color:mediumseagreen; font: 2em bold;}
+        td {width: 100px; height: 100px; border: 1px solid #000; text-align: center; }
+    </style>
+</head>
+<body>
+    <span> Время : <span id="min">0</span>  минут  <span id="sec">0</span> секунд </span> 
+    <table id="tbl"></table>
+    <script>
+        let min= document.getElementById("min");
+        let sec= document.getElementById("sec");
+/////
+
+        const tbl= document.getElementById("tbl");
+        let kod="";
+        let arr=[];
+
+        for(let i=1; i<=16; i++){
+            arr.push(i);
+        }
+
+        for(let i=1; i<=4; i++){
+            kod += "<tr>";
+                for(let j=1; j<=4; j++){
+                    let x= rand(0, arr.length-1);
+                    kod+="<td onclick=\"clicked(this)\">"+ arr[x] +"</td>";
+                    arr.splice(x,1);
+                }
+            kod+="</tr>"
+        }
+
+        tbl.innerHTML=kod;
+
+        function rand(min, max){
+            return Math.floor(Math.random()* (max-min+1)) + min;
+        }
+
+        //////////////
+        let minute=0;
+        let second=0; 
+        let timeFunc = setInterval(time,1000);
+        
+        function time(){
+            second++;
+            if(second>59){
+                minute++; 
+                second=0;
+            }
+            sec.innerHTML=second;
+            min.innerHTML=minute;
+        }
+
+
+        function gameover(){
+            alert("Вы проиграли так как Ваше время истекло.");
+        }
+
+        let num=1;
+        function clicked(el){
+            let selectedNum= +el.innerHTML;
+            if(selectedNum==num){
+                num++;
+                el.style.background = "black"
+            }
+        lostOrWon()
+        }
+       
+        
+        function lostOrWon(){
+            if (num==17){
+                alert("Вы победили ! " + "Потраченное время = " + minute + " минут " + second + " секунд ");
+                clearInterval(time);
+            }
+            if(minute>0)
+            gameover();
+           
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        span {font: 1.2em bold; color: blue;}
+        table {border-collapse: collapse; margin:50px auto;}
+        td {width:100px; height: 100px; border: 1px solid gray; text-align: center;}
+        img {width: 90px}
+    </style>
+</head>
+<body>
+    <span> Время : <span id="min">0</span>  минут  <span id="sec">0</span> секунд </span> 
+    <table id="tbl"></table>
+    <script>
+        let min= document.getElementById("min");
+        let sec= document.getElementById("sec");
+
+        let minute=0;
+        let second=0; 
+        let timeFunc = setInterval(time,1000);
+        
+        function time(){
+            second++;
+            if(second>59){
+                minute++; 
+                second=0;
+            }
+            sec.innerHTML=second;
+            min.innerHTML=minute;
+        }
+        //
+        const tbl = document.getElementById("tbl");
+        let icon =["youtube", "instagram", "email", "facebook", "twitter", "pinterest", "linkedin", "skype"];
+        let arr=[];
+        let tablica=[];
+        let mask=[];
+        let prev =[]; //koordinati pervoy knopki
+
+        for(let i =0; i<8; i++ ){
+            arr.push(i);
+            arr.push(i);
+        }
+        for(let i=0; i<4; i++){
+            tablica[i] = [];
+            mask[i]=[];
+            for(let j=0; j<4; j++){
+                let indx = rand(0,arr.length-1);
+                tablica[i][j] = arr[indx];
+                mask[i][j]=1;
+                arr.splice(indx,1);
+            }
+        }
+
+        show();
+ 
+        setTimeout(shut,3000);
+
+        function shut(){
+            for(let i=0; i<4; i++){
+                for(let j=0; j<4; j++){
+                    mask[i][j]=0;
+                }
+            }
+            show();
+        }
+
+        function change(i,j){
+            mask[i][j]=1;
+            show();
+            if (prev.length==0){
+                prev[0]=i;
+                prev[1]=j;
+            } else {
+                if(tablica[i][j]==tablica[prev[0]][prev[1]])   prev=[];
+                else{
+                    setTimeout(function(){
+                        mask[prev[0]][prev[1]]=0;
+                        mask[i][j]=0;
+                        show();
+                        prev=[];
+                    },1000);
+                }
+            }
+            check();
+        }
+
+        function show(){
+            let kod="";
+            for(let i=0; i<4; i++){
+                kod +="<tr>";
+                    for(let j=0; j<4; j++){
+                        let img = mask[i][j] ? icon[tablica[i][j]] : "flickr";
+                        kod +='<td onclick="change('+ i +', '+ j +')"><img src="icons/'+ img +'.png"/></td>';
+                    }
+                kod+="</tr>";
+            }
+            tbl.innerHTML=kod; 
+        }
+
+        //
+        function check(){
+            let count=0;
+            for(let i=0; i<4; i++){
+                for(let j=0; j<4; j++){
+                    if(mask[i][j]==1) {
+                        count++;
+                    }
+                }
+            }
+                if(count==16){ 
+                    alert(`Вы победили. Потраченное время =  ${minute} минут : ${second} секунд.`);
+                    clearInterval(timeFunc)
+            }
+        }
+
+        //
+
+        function rand(min,max){
+            return Math.floor(Math.random()* (max - min + 1))+ min;
+        }
+    </script>
+</body>
+</html>

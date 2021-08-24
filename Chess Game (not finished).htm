@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Document</title>
+        <style>
+            table { border-collapse: collapse; }
+            td { width: 50px; height: 50px; text-align: center; } 
+            .black { background: orange; }
+            .white { background: yellow; }
+            .none { background: none; }
+        </style>
+    </head>
+    <body>
+        <select id="letter"></select>
+        <select id="number"></select>
+        <button id="btn">Ok</button>
+
+        <table id="tbl"></table>
+
+        <script>
+            let tbl = document.getElementById("tbl");
+            let letter = document.getElementById("letter");
+            let number = document.getElementById("number");
+            let btn = document.getElementById("btn");
+            let abc = [""]; //Массив букв
+            let x = 2;
+            let y = 1;
+
+            for(let i = 1; i <= 8; i++){
+                abc.push('&#' + (64 + i) + ';');
+
+                letter.innerHTML += '<option value="' + i + '">' + abc[i] + '</option>';
+                number.innerHTML += '<option>' + i + '</option>';
+            }
+            chess();
+
+            btn.onclick = function(){
+                x = letter.value;
+                y = number.value;
+                console.log(x + y);
+                chess();
+            }
+            function go(i, j){
+                x = j;
+                y = i;
+                chess();
+            }
+            function chess() {
+                let kod = "";
+                let color = "";
+                let cell = "";
+                for(let i = 0; i <= 8; i++){
+                    kod += "<tr>";
+                    for(let j = 0; j <= 8; j++){
+
+                        if (i == 0 || j == 0) color = "none";
+                        else if((i+j) % 2) color = "white"; 
+                        else color = "black";
+
+                        if(i == 0) cell = abc[j];
+                        else if(j == 0) cell = i;
+                        else if(i == y && j == x) cell = "&#9822;";
+                        else if(Math.abs(i - y) == 1 && Math.abs(j - x) == 2 ||
+                                Math.abs(i - y) == 2 && Math.abs(j - x) == 1 ) cell = "*";
+                        else cell = ""; 
+
+                        kod += '<td onclick="go(' + i + ',' + j + ')" class="' + color + '">' + cell + '</td>';
+                    }
+                    kod += "</tr>";
+                }
+                tbl.innerHTML = kod;
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,35 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Document</title>
+    </head>
+    <body>
+        <h1 id="message"></h1>
+        <input id="r" type="text" />
+        <button onclick="go()"> Ok </button>
+
+        <script>
+            let n = 10;
+            let number = rand(1, n);
+            let x = 0;
+            const message = document.getElementById("message");
+            const r = document.getElementById("r");
+
+            message.innerHTML = `Я загадал чисто от 1 до ${n}.`;
+            r.placeholder = "Введите число";
+
+            function go() {
+                x++;
+                if (r.value == number) message.innerHTML = `Поздравляю. Угадал c ${x} попыток !`;
+                else if (number > r.value) message.innerHTML = "Больше.";
+                else  message.innerHTML = "Меньше.";
+            }
+
+            function rand(min, max) {
+                return Math.floor(Math.random() * (max - min + 1) ) + min;
+            }
+        </script>
+    </body>
+</html>
