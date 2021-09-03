@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>CanvasArkanoid</title>
+    </head>
+    <style>
+        canvas{padding-left: 0;
+            padding-right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+    </style>
+    <body>
+        <canvas id="canvas" width="800" height="600" style="border: 4px solid blueviolet; background:#1616d6de ;"></canvas>
+        <script>
+            let canvas = document.getElementById("canvas");
+            let arkanoid = canvas.getContext("2d");
+            var keys = {};
+            var bricks = {};
+            let score=0;
+            
+
+            // ball variables
+            let radius = 15;
+            var ballX = 300;
+            var ballY = 300;
+            var vertiSpeed = -2;  //vertical speed of ball
+            var horiSpeed = 2;    //horizontal speed of ball
+            var ballAngle = 0;
+
+            //bar variables
+            let barSpeed = 5;
+            let barX = 300;
+            let barY = 500;
+            let barWidth = 100;
+            let barHeight = 15;
+
+            // brick variables
+            var brickRowCount = 5;
+            var brickColCount = 10;
+            let brickHeight = 25;
+            let brickWidth = 65;
+            let brickTopOffset = 10;
+            let brickLeftOffset = 10;
+            let brickPadding = 14;
+
+
+                for (let col = 0; col < brickColCount; col++) {
+                    bricks[col] = {};
+                    for (let row = 0; row < brickRowCount; row++) {
+                    bricks[col][row] = {   
+                        x: 0,   
+                        y: 0, 
+                        status: 1 
+                        };
+                    }
+                }
+                window.addEventListener('keydown', function (e) {
+                    keys[e.keyCode] = true;
+                    e.preventDefault();
+                });
+                window.addEventListener('keyup', function (e) { delete keys[e.keyCode]  })
+
+            //1
+            function drawBall (){
+                arkanoid.beginPath();
+                arkanoid.arc(ballX, ballY, radius, 0, 2 * Math.PI);
+                arkanoid.lineWidth = 5;
+
+                // create radial gradient
+                let grd = arkanoid.createRadialGradient(ballX -5, ballY -5, 0,ballX -5, ballY, 18);
+                grd.addColorStop(0, 'white');
+                grd.addColorStop(1, 'red');
+
+                arkanoid.fillStyle = grd;
+                arkanoid.fill();
+                arkanoid.closePath();
+            }
+
+            //2
+            function drawBar(){
+                arkanoid.beginPath();
+                arkanoid.rect(barX, barY, barWidth, barHeight);
+                arkanoid.fillStyle = '#bfd5be';
+                arkanoid.lineWidth = 10;
+                arkanoid.strokeStyle = 'black';
+                arkanoid.stroke();
+                arkanoid.fill();
+                arkanoid.closePath();
+            }
+
+            //3
+            function drawBricks(){
+                for (let col = 0; col < brickColCount; col++) {
+                for (let row = 0; row < brickRowCount; row++) {
+                    if (bricks[col][row].status == 1) {
+                        let brickX = (col * (brickWidth + brickPadding)) + brickLeftOffset;
+                        let brickY = (row * (brickHeight + brickPadding)) + brickTopOffset;
+                        bricks[col][row].x = brickX;
+                        bricks[col][row].y = brickY;
+                        arkanoid.beginPath();
+                        arkanoid.rect(brickX, brickY, brickWidth, brickHeight);
+                        arkanoid.fillStyle = '#a7ee15';
+                        arkanoid.fill();
+                        arkanoid.closePath();
+                        }
+                    }
+                }
+            }
+
+            //4
+            function Collision(){
+                for (col = 0; col < brickColCount; col++) {
+                    for (row = 0; row < brickRowCount; row++) {
+                    var b = bricks[col][row];
+                    if (b.status == 1) {
+                        if (ballX > b.x && ballX < b.x + brickWidth && ballY > b.y && ballY < b.y + brickHeight) {
+                            vertiSpeed = -vertiSpeed;
+                            b.status = 0;
+                            score++
+                            }
+                        }
+                    }
+                }
+            }
+
+            //5
+            function draw() {
+                arkanoid.clearRect(0, 0, canvas.width, canvas.height);
+                drawBricks();
+                drawBar();
+                drawBall();
+                Collision(); 
+                arkanoid.font = 'italic 40pt Calibri ';
+                arkanoid.fillStyle  = '#f0a8a8';
+                arkanoid.fillText(`Your score: ${score}`, 250, 590)
+
+                if(ballX + horiSpeed > canvas.width-radius || ballX + horiSpeed < radius) {
+                horiSpeed = -horiSpeed;
+                }
+                if(ballY + vertiSpeed < radius) {
+                vertiSpeed = -vertiSpeed;
+                }
+                else if (ballY + vertiSpeed> barY - radius ) {
+                    if (ballX + radius > barX && ballX - radius < barX + barWidth) {
+                        if (ballY = ballY - barHeight) {
+                            ballAngle = ((barX + barWidth / 2) - ballX) * 0.05;
+                            horiSpeed = horiSpeed + ballAngle;
+                            vertiSpeed = -vertiSpeed;
+                        }
+                    }
+                    else {
+                        alert(`GAME OVER! Your score: ${score}`);
+                        document.location.reload();
+                    }
+                }
+
+                if (37 in keys) {
+                    if (barX - barSpeed > 0) {
+                        barX -= barSpeed;
+                    }
+                } 
+                else if (39 in keys) {
+                    if (barX + barWidth + barSpeed < canvas.width) {
+                        barX += barSpeed;
+                    }
+                }
+                ballX += horiSpeed;
+                ballY += vertiSpeed;
+            }
+            
+            function loop() {
+                draw();
+               window.requestAnimationFrame(loop);
+            }
+            loop();
+        </script>
+    </body>
+</html>
